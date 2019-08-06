@@ -18,6 +18,20 @@
 #include "srslte/srslte.h"
 
 
+typedef struct SRSLTE_API {
+    uint16_t mcc;
+    uint16_t mnc;
+    uint16_t tac;
+    uint16_t cid;
+    uint16_t enb_id;
+    
+} srslte_ue_sib1_t;
+
+SRSLTE_API void srslte_sib1_unpack(uint8_t *x, srslte_ue_sib1_t *sib1){
+    
+    printf("Successful!\n");
+};
+
 SRSLTE_API int print_test(void){
     printf("Header test\n");
     return 0;

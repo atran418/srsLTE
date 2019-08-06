@@ -633,6 +633,10 @@ int main(int argc, char** argv) {
                     printf("SIB1: ");
                   srslte_vec_fprint_byte(stdout, data[0], 18);
                   
+                  srslte_ue_sib1_t sib1;
+                  
+                  srslte_sib1_unpack(data[0], &sib1);
+                  
                   // MCC
                   uint8_t mcc1 = data[0][2] >> 2;
                   uint8_t mcc2 = data[0][1] & 0x3F;
