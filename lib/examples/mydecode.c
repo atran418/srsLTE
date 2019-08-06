@@ -30,6 +30,7 @@
 #include "srslte/phy/io/filesink.h"
 #include "srslte/srslte.h"
 #include "srslte/phy/utils/debug.h"
+#include "srslte/phy/ue/ue_sib.h"
 
 #include "srslte/phy/rf/rf.h"
 #include "srslte/phy/rf/rf_utils.h"
@@ -188,6 +189,7 @@ srslte_netsink_t net_sink, net_sink_signal;
 
 int main(int argc, char** argv) {
     printf("Hello srsLTE\n");
+    int test = print_test();
     
     // Take user input for downlink frequency
     double frequency;
@@ -648,6 +650,10 @@ int main(int argc, char** argv) {
                   // CID
                   uint16_t cid = ((data[0][8] & 0x0F) << 4) | (data[0][9] >> 4);
                   printf("- CID: %02x \n", cid);
+                  
+                  // eNB ID
+                  uint16_t enb_id = (data[0][7] << 4) | (data[0][8] >> 4);
+                  printf("- eNB ID: %03x \n", enb_id);
                   
                   
                   nof_detected++;
