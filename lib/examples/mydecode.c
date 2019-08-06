@@ -582,7 +582,6 @@ int main(int argc, char** argv) {
           }
           break;
         case DECODE_PDSCH:
-
           if (prog_args.rnti != SRSLTE_SIRNTI) {
             decode_pdsch = true;
             if (srslte_sfidx_tdd_type(dl_sf.tdd_config, sf_idx) == SRSLTE_TDD_SF_U) {
@@ -590,11 +589,11 @@ int main(int argc, char** argv) {
             }
           } else {
             /* We are looking for SIB1 Blocks, search only in appropriate places */
-            if ((sf_idx == 5 && (sfn % 2) == 0) || mch_table[sf_idx] == 1) {
+//            if ((sf_idx == 5 && (sfn % 2) == 0) || mch_table[sf_idx] == 1) {
+              if ((sf_idx ==5) || mch_table[sf_idx] ==1) {
               decode_pdsch = true;
             } else {
               decode_pdsch = false;
-//              decode_pdsch = true;
             }
           }
 
@@ -625,7 +624,7 @@ int main(int argc, char** argv) {
                   (ue_dl_cfg.cfg.tm > SRSLTE_TM1 && cell.nof_ports > 1)) {
                 n = srslte_ue_dl_find_and_decode(&ue_dl, &dl_sf, &ue_dl_cfg, &pdsch_cfg, data, acks);
                 
-                //On success?
+                //On success
                 if (n > 0) {
                     
                   // TODO: sometimes wont print out SIB?
