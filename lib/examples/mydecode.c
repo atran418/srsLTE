@@ -639,6 +639,7 @@ int main(int argc, char** argv) {
                   srslte_sib1_fprint(stdout, &sib1);
                   
                   // Exit
+                  exit(1);
              
                   
                   
