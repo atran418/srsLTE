@@ -189,7 +189,6 @@ srslte_netsink_t net_sink, net_sink_signal;
 
 int main(int argc, char** argv) {
     printf("Hello srsLTE\n");
-    int test = print_test();
     
     // Take user input for downlink frequency
     double frequency;
@@ -629,7 +628,7 @@ int main(int argc, char** argv) {
                 //On success
                 if (n > 0) {
                     
-                  // TODO: sometimes wont print out SIB?
+                  // Decode SIB1
                     printf("SIB1: ");
                   srslte_vec_fprint_byte(stdout, data[0], 18);
                   
@@ -637,27 +636,10 @@ int main(int argc, char** argv) {
                   
                   srslte_sib1_unpack(data[0], &sib1);
                   
-                  // MCC
-                  uint8_t mcc1 = data[0][2] >> 2;
-                  uint8_t mcc2 = data[0][1] & 0x3F;
-                  uint16_t mcc = (mcc2<<6)|(mcc1);
-                  printf("- MCC: %03x \n", mcc);
+                  srslte_sib1_fprint(stdout, &sib1);
                   
-                  // MNC
-                  uint16_t mnc = ((data[0][2] & 0x01)<<7) | (data[0][3] >>1);
-                  printf("- MNC: %02x \n", mnc);
-                  
-                  // TAC
-                  uint16_t tac = ((data[0][4]) << 8) | (data[0][5]);
-                  printf("- TAC: %04x \n", tac);
-                  
-                  // CID
-                  uint16_t cid = ((data[0][8] & 0x0F) << 4) | (data[0][9] >> 4);
-                  printf("- CID: %02x \n", cid);
-                  
-                  // eNB ID
-                  uint16_t enb_id = (data[0][7] << 4) | (data[0][8] >> 4);
-                  printf("- eNB ID: %03x \n", enb_id);
+                  // Exit
+             
                   
                   
                   nof_detected++;
