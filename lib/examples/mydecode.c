@@ -630,29 +630,29 @@ int main(int argc, char** argv) {
                 //On success
                 if (n > 0) {
                     
-                    
+                  int repeat = 0;
                   for (int i = 0; i < sizeof(temp); i++){
                       if(temp[i] == *data[0]){
-                          printf("Found match at count %i\n", cnt);
-                          
-                          // Decode SIB1
-                          printf("SIB1: ");
-                          srslte_vec_fprint_byte(stdout, data[0], 18);
-                          
-                          srslte_ue_sib1_t sib1;
-                  
-                          srslte_sib1_unpack(data[0], &sib1);
-                  
-                          srslte_sib1_fprint(stdout, &sib1);
-                  
-                           //Print to log
-                           FILE *fp;
-                           fp = fopen("sib1.txt", "w");
-                           srslte_sib1_fprint(fp, &sib1);
-                           fclose(fp);
-                  
-                          
-                          exit(1);
+                          repeat++;
+                          if (repeat == 2){
+                            printf("Found match at count %i\n", cnt);
+
+                            // Decode SIB1
+                            printf("SIB1: ");
+                            srslte_vec_fprint_byte(stdout, data[0], 18);
+
+                            srslte_ue_sib1_t sib1;
+                            srslte_sib1_unpack(data[0], &sib1);
+                            srslte_sib1_fprint(stdout, &sib1);
+
+                             //Print to log
+                             FILE *fp;
+                             fp = fopen("sib1.txt", "w");
+                             srslte_sib1_fprint(fp, &sib1);
+                             fclose(fp);
+
+                            exit(1);
+                          }
                       }
                   }  
                   
