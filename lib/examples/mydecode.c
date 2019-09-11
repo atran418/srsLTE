@@ -495,7 +495,7 @@ int main(int argc, char** argv) {
   srslte_pbch_decode_reset(&ue_mib.pbch);
 
   INFO("\nEntering main loop...\n\n");
-
+  
   // Variables for measurements
   uint32_t nframes = 0;
   float    rsrp0 = 0.0, rsrp1 = 0.0, rsrq = 0.0, snr = 0.0, enodebrate = 0.0, uerate = 0.0, procrate = 0.0,
@@ -638,10 +638,15 @@ int main(int argc, char** argv) {
                   
                   srslte_sib1_fprint(stdout, &sib1);
                   
-                  // Exit
-                  exit(1);
-             
+                  //Print to log
+                  FILE *fp;
+                  fp = fopen("sib1.txt", "w");
+                  srslte_sib1_fprint(fp, &sib1);
+                  fclose(fp);
                   
+                  // Exit
+                  printf("\nFinished Decoding... exiting\nGoodbye!\n");
+                  exit(1);
                   
                   nof_detected++;
 //                  last_decoded_tm = tm;
