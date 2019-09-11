@@ -58,9 +58,9 @@ SRSLTE_API void srslte_sib1_fprint(FILE *stream, srslte_ue_sib1_t *sib1){
     // Printing Properties
     fprintf(stream, "- MCC:              %03x\n", sib1->mcc);
     fprintf(stream, "- MNC:              %02x\n", sib1->mnc);
-    fprintf(stream, "- TAC:              %04x\n", sib1->tac);
-    fprintf(stream, "- CID:              %02x\n", sib1->cid);
-    fprintf(stream, "- eNB ID:           %03x\n", sib1->enb_id);
+    fprintf(stream, "- TAC:              0x%04x\n", sib1->tac);
+    fprintf(stream, "- CID:              0x%02x\n", sib1->cid);
+    fprintf(stream, "- eNB ID:           0x%03x\n", sib1->enb_id);
 };
 
 SRSLTE_API int print_test(void){
