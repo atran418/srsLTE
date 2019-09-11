@@ -509,6 +509,8 @@ int main(int argc, char** argv) {
   /* Main loop */
   uint64_t sf_cnt          = 0;
   uint32_t sfn             = 0;
+  int cnt             = 0;
+  uint8_t temp[20];
 //  uint32_t last_decoded_tm = 0;
   while (!go_exit && (sf_cnt < prog_args.nof_subframes || prog_args.nof_subframes == -1)) {
     char input[128];
@@ -628,25 +630,57 @@ int main(int argc, char** argv) {
                 //On success
                 if (n > 0) {
                     
+                    
+                  for (int i = 0; i < sizeof(temp); i++){
+                      if(temp[i] == *data[0]){
+                          printf("Found match at count %i\n", cnt);
+                          
+                          // Decode SIB1
+                          printf("SIB1: ");
+                          srslte_vec_fprint_byte(stdout, data[0], 18);
+                          
+                          srslte_ue_sib1_t sib1;
+                  
+                          srslte_sib1_unpack(data[0], &sib1);
+                  
+                          srslte_sib1_fprint(stdout, &sib1);
+                  
+                           //Print to log
+                           FILE *fp;
+                           fp = fopen("sib1.txt", "w");
+                           srslte_sib1_fprint(fp, &sib1);
+                           fclose(fp);
+                  
+                          
+                          exit(1);
+                      }
+                  }  
+                  
+                  temp[cnt] = *data[0];
+                  cnt++;
+//                  if(temp[0] == *data[0])
+
+
+                  
                   // Decode SIB1
-                    printf("SIB1: ");
-                  srslte_vec_fprint_byte(stdout, data[0], 18);
-                  
-                  srslte_ue_sib1_t sib1;
-                  
-                  srslte_sib1_unpack(data[0], &sib1);
-                  
-                  srslte_sib1_fprint(stdout, &sib1);
-                  
-                  //Print to log
-                  FILE *fp;
-                  fp = fopen("sib1.txt", "w");
-                  srslte_sib1_fprint(fp, &sib1);
-                  fclose(fp);
+//                    printf("SIB1: ");
+//                  srslte_vec_fprint_byte(stdout, data[0], 18);
+//                  
+//                  srslte_ue_sib1_t sib1;
+//                  
+//                  srslte_sib1_unpack(data[0], &sib1);
+//                  
+//                  srslte_sib1_fprint(stdout, &sib1);
+//                  
+//                  //Print to log
+//                  FILE *fp;
+//                  fp = fopen("sib1.txt", "w");
+//                  srslte_sib1_fprint(fp, &sib1);
+//                  fclose(fp);
                   
                   // Exit
-                  printf("\nFinished Decoding... exiting\nGoodbye!\n");
-                  exit(1);
+//                  printf("\nFinished Decoding... exiting\nGoodbye!\n");
+//                  exit(1);
                   
                   nof_detected++;
 //                  last_decoded_tm = tm;
