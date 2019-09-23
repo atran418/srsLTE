@@ -37,6 +37,9 @@ if(RF_FOUND)
   add_executable(mydecode mydecode.c)
   target_link_libraries(mydecode srslte_phy srslte_common srslte_rf pthread)
 
+  add_executable(id_mapping identity_mapping.c)
+  target_link_libraries(id_mapping srslte_phy srslte_common srslte_rf pthread)
+
   add_executable(pdsch_enodeb pdsch_enodeb.c)
   target_link_libraries(pdsch_enodeb srslte_phy srslte_common srslte_rf pthread)
 else(RF_FOUND)

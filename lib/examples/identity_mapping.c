@@ -5,7 +5,7 @@
  */
 
 /* 
- * File:   mydecode.c
+ * File:   identity_mapping.c
  * Author: Andy Tran
  *
  * Created on July 29, 2019, 12:02 PM
@@ -627,6 +627,13 @@ int main(int argc, char** argv) {
                   (ue_dl_cfg.cfg.tm > SRSLTE_TM1 && cell.nof_ports > 1)) {
                 n = srslte_ue_dl_find_and_decode(&ue_dl, &dl_sf, &ue_dl_cfg, &pdsch_cfg, data, acks);
                 
+                srslte_dci_dl_t dci_msg[SRSLTE_MAX_DCI_MSG];
+                uint16_t rnti = pdsch_cfg.rnti;
+                
+//                n = srslte_ue_dl_find_dl_dci(&ue_dl, &dl_sf, &ue_dl_cfg, rnti, dci_msg);
+               
+             
+                
                 //On success
                 if (n > 0) {
                     
@@ -634,7 +641,6 @@ int main(int argc, char** argv) {
                   for (int i = 0; i < sizeof(temp); i++){
                       if(temp[i] == *data[0]){
                           repeat++;
-//                          srslte_vec_fprint_byte(stdout, data[0], 18);
                           if (repeat == 3){
                             printf("Found match at count %i\n", cnt);
 
@@ -661,8 +667,8 @@ int main(int argc, char** argv) {
                       }
                   }  
                   
-                  temp[cnt] = *data[0];
-                  cnt++;
+//                  temp[cnt] = *data[0];
+//                  cnt++;
                   
                   nof_detected++;
 //                  last_decoded_tm = tm;
