@@ -32,6 +32,7 @@
 
 #define ENABLE_AGC_DEFAULT
 
+
 #ifndef DISABLE_RF
 
 #include "srslte/phy/rf/rf.h"
@@ -792,25 +793,14 @@ int main(int argc, char **argv) {
                 int x = 0;
                 srslte_pdsch_res_t pdsch_dec[SRSLTE_MAX_CODEWORDS];
                 ZERO_OBJECT(pdsch_dec);
-                
-//                x = srslte_ue_dl_decode_pdsch(&ue_dl, &dl_sf, &pdsch_cfg, pdsch_dec);
-                
-//                srslte_dci_dl_t dci_dl;
-//                int x = 0;
-//                x = srslte_ue_dl_find_dl_dci(&ue_dl, &dl_sf, &ue_dl_cfg, prog_args.rnti, &dci_dl);
-////                printf("Finished executing: %d!\n", x);
-//                if (x == 1)
-//                {
-//                    printf("Found DCI!\n");
-//                }
-//                
+                      
                 if (n > 0) {
                     
-                  srslte_vec_fprint_byte(stdout, data[0], 19);  
+                  srslte_vec_fprint_byte(stdout, data[0], 32);  
                   
                   // Unpack SIBS if SI-RNTI
                   if (prog_args.rnti == SRSLTE_SIRNTI){  
-                    printf("SIB1: ");
+                    printf("SIB1: \n");
 
                     srslte_ue_sib1_t sib1;
                     srslte_sib1_unpack(data[0], &sib1);
