@@ -740,6 +740,11 @@ int main(int argc, char **argv) {
             } else if (n == SRSLTE_UE_MIB_FOUND) {
               srslte_pbch_mib_unpack(bch_payload, &cell, &sfn);
               srslte_cell_fprint(stdout, &cell, sfn);
+              // PRINT TO LOG 
+              FILE *fp;
+              fp = fopen("mib.txt", "w");
+              srslte_cell_fprint(fp, &cell, sfn);
+              fclose(fp);
               printf("Decoded MIB. SFN: %d, offset: %d\n", sfn, sfn_offset);
               sfn   = (sfn + sfn_offset) % 1024;
               state = DECODE_PDSCH;
@@ -795,8 +800,17 @@ int main(int argc, char **argv) {
                 ZERO_OBJECT(pdsch_dec);
                       
                 if (n > 0) {
-                    
-                  srslte_vec_fprint_byte(stdout, data[0], 32);  
+                  
+                    if (prog_args.rnti == SRSLTE_PRNTI){
+                        srslte_vec_fprint_byte(stdout, data[0], 7);
+                        // DUMP INTO FILE
+                        FILE *fp;
+                        fp = fopen("paging_dump.txt", "a");
+                        srslte_vec_fprint_byte(fp, data[0], 7);
+                        fclose(fp);
+                         
+                         
+                    }  
                   
                   // Unpack SIBS if SI-RNTI
                   if (prog_args.rnti == SRSLTE_SIRNTI){  
