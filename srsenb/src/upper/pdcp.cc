@@ -140,8 +140,12 @@ void pdcp::user_interface_rlc::write_sdu(uint32_t lcid, srslte::byte_buffer_t* s
 void pdcp::user_interface_rrc::write_pdu(uint32_t lcid, srslte::byte_buffer_t* pdu)
 {
   cout << "Write PDU on RRC interface" << endl;
-  cout << "message(dec): " << unsigned(*(pdu->msg)) << endl;
-   
+  for(uint32_t i = 0; i < pdu->N_bytes; i++)
+  {
+//    cout << unsigned((pdu->msg[i])) << " ";
+    cout << hex << (pdu->msg[i]) << " ";
+  }
+  cout << endl;
   rrc->write_pdu(rnti, lcid, pdu);
   
 }
