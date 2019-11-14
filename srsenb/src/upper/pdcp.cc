@@ -28,6 +28,7 @@
 #include "upper/common_enb.h"
 
 #include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -143,7 +144,7 @@ void pdcp::user_interface_rrc::write_pdu(uint32_t lcid, srslte::byte_buffer_t* p
   for(uint32_t i = 0; i < pdu->N_bytes; i++)
   {
 //    cout << unsigned((pdu->msg[i])) << " ";
-    cout << hex << (pdu->msg[i]) << " ";
+    cout << setw(2) << setfill('0') << hex << (int)(pdu->msg[i]) << " ";
   }
   cout << endl;
   rrc->write_pdu(rnti, lcid, pdu);
