@@ -31,6 +31,9 @@
 #include "srslte/asn1/liblte_mme.h"
 #include "upper/rrc.h"
 
+#include <iostream>
+using namespace std;
+
 using srslte::byte_buffer_t;
 using srslte::bit_buffer_t;
 
@@ -285,6 +288,9 @@ void rrc::max_retx_attempted(uint16_t rnti)
 *******************************************************************************/
 void rrc::write_pdu(uint16_t rnti, uint32_t lcid, byte_buffer_t* pdu)
 {
+    
+  cout << "Write PDU (RRC)" << endl;
+  cout << "message(dec): " << unsigned(*(pdu->msg)) << "\n" << endl;
   rrc_pdu p = {rnti, lcid, pdu};
   rx_pdu_queue.push(p);
 }
