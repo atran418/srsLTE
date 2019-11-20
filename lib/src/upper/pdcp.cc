@@ -27,6 +27,22 @@
 
 #include "srslte/upper/pdcp.h"
 
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+//void print_packet_message(srsltebyte_buffer_t *pdu)
+//{
+//  for(uint32_t i = 0; i < pdu->N_bytes; i++)
+//  {
+//    cout << setw(2) << setfill('0') << hex << (int)(pdu->msg[i]) << " ";
+//  }
+//  cout << endl;
+//  
+//}
+
+
 namespace srslte {
 
 pdcp::pdcp()
@@ -61,7 +77,18 @@ void pdcp::reset()
 
   pdcp_array[0].init(rlc, rrc, gw, pdcp_log, lcid, direction);
 }
-
+/*******************************************************************************
+ Print Messages
+*******************************************************************************/
+void print_packet_message(byte_buffer_t *pdu)
+{
+  for(uint32_t i = 0; i < pdu->N_bytes; i++)
+  {
+    cout << setw(2) << setfill('0') << hex << (int)(pdu->msg[i]) << " ";
+  }
+  cout << endl;
+  
+}
 /*******************************************************************************
   RRC/GW interface
 *******************************************************************************/
@@ -76,6 +103,8 @@ bool pdcp::is_drb_enabled(uint32_t lcid)
 
 void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
 {
+  cout << "SDU" << endl;
+  print_packet_message(sdu);
   if(valid_lcid(lcid))
     pdcp_array[lcid].write_sdu(sdu);
 }
@@ -109,6 +138,8 @@ void pdcp::config_security(uint32_t lcid,
 *******************************************************************************/
 void pdcp::write_pdu(uint32_t lcid, byte_buffer_t *pdu)
 {
+  cout << "PDU" << endl;
+  print_packet_message(pdu);
   if(valid_lcid(lcid))
     pdcp_array[lcid].write_pdu(pdu);
 }

@@ -39,6 +39,22 @@
 
 using namespace srslte;
 
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+void print_packet_message(srslte::byte_buffer_t *pdu)
+{
+  for(uint32_t i = 0; i < pdu->N_bytes; i++)
+  {
+    cout << setw(2) << setfill('0') << hex << (int)(pdu->msg[i]) << " ";
+  }
+  cout << endl;
+  
+}
+
+
 namespace srsue {
 
 
@@ -620,6 +636,10 @@ void rrc::send_con_request() {
   mac->set_contention_id(uecri);
 
   rrc_log->info("Sending RRC Connection Request on SRB0\n");
+  
+  //MATCHES OUTPUT MESSAGE TO ENB PDCP/RRC INTERFACE
+  cout << "Connection Request (SDU)" << endl;
+  print_packet_message(pdcp_buf);
   pdcp->write_sdu(RB_ID_SRB0, pdcp_buf);
 }
 
@@ -709,6 +729,10 @@ void rrc::send_con_restablish_request() {
   mac->set_contention_id(uecri);
 
   rrc_log->info("Sending RRC Connection Reestablishment Request on SRB0\n");
+  
+  //FIXME: not printing out pdcp buffer
+  print_packet_message(pdcp_buf);
+  
   pdcp->write_sdu(RB_ID_SRB0, pdcp_buf);
 }
 
@@ -1049,6 +1073,8 @@ void rrc::write_pdu_pcch(byte_buffer_t *pdu) {
 *
 *******************************************************************************/
 void rrc::write_sdu(uint32_t lcid, byte_buffer_t *sdu) {
+  cout << "Writing SDU (RRC)" << endl;
+  print_packet_message(sdu);
   rrc_log->info_hex(sdu->msg, sdu->N_bytes, "RX %s SDU", get_rb_name(lcid).c_str());
   switch (state) {
     case RRC_STATE_CONNECTING:
@@ -1064,6 +1090,8 @@ void rrc::write_sdu(uint32_t lcid, byte_buffer_t *sdu) {
 }
 
 void rrc::write_pdu(uint32_t lcid, byte_buffer_t *pdu) {
+  cout << "Writing PDU (RRC)" << endl;
+  print_packet_message(pdu);
   rrc_log->info_hex(pdu->msg, pdu->N_bytes, "TX %s PDU", get_rb_name(lcid).c_str());
   rrc_log->info("TX PDU Stack latency: %ld us\n", pdu->get_latency_us());
 

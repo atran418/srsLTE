@@ -32,6 +32,16 @@
 
 using namespace std;
 
+void print_packet_message(srslte::byte_buffer_t *pdu)
+{
+  for(uint32_t i = 0; i < pdu->N_bytes; i++)
+  {
+    cout << setw(2) << setfill('0') << hex << (int)(pdu->msg[i]) << " ";
+  }
+  cout << endl;
+  
+}
+
 namespace srsenb {
   
 void pdcp::init(rlc_interface_pdcp* rlc_, rrc_interface_pdcp* rrc_, gtpu_interface_pdcp* gtpu_, srslte::log* pdcp_log_)
@@ -105,10 +115,8 @@ void pdcp::write_pdu(uint16_t rnti, uint32_t lcid, srslte::byte_buffer_t* sdu)
 {
   if (users.count(rnti)) {
     cout << "Writing PDU (PDCP)" << endl;
-    cout << "N bytes: " << sdu -> N_bytes << endl; 
-      
-    cout << "message (dec): " << unsigned(*(sdu  ->msg)) << endl;
-//    cout << "message(hex): " << hex << (int)(*(sdu->msg)) << endl;
+    cout << "N bytes: " << (int)(sdu -> N_bytes) << endl; 
+    print_packet_message(sdu);
     users[rnti].pdcp->write_pdu(lcid, sdu);
   } else {
     pool->deallocate(sdu);
@@ -118,7 +126,7 @@ void pdcp::write_pdu(uint16_t rnti, uint32_t lcid, srslte::byte_buffer_t* sdu)
 void pdcp::write_sdu(uint16_t rnti, uint32_t lcid, srslte::byte_buffer_t* sdu)
 {
   cout << "Writing SDU" << endl;
-  cout << "message(dec): " << unsigned(*(sdu->msg)) << "\n" << endl;
+  print_packet_message(sdu);
   if (users.count(rnti)) {
     users[rnti].pdcp->write_sdu(lcid, sdu);
   } else {
@@ -134,19 +142,14 @@ void pdcp::user_interface_gtpu::write_pdu(uint32_t lcid, srslte::byte_buffer_t *
 void pdcp::user_interface_rlc::write_sdu(uint32_t lcid, srslte::byte_buffer_t* sdu)
 {
   cout << "Write SDU (RLC interface)" << endl;
-  cout << "message(dec)" << unsigned(*(sdu->msg)) << endl;
+  print_packet_message(sdu);
   rlc->write_sdu(rnti, lcid, sdu);
 }
 
 void pdcp::user_interface_rrc::write_pdu(uint32_t lcid, srslte::byte_buffer_t* pdu)
 {
   cout << "Write PDU on RRC interface" << endl;
-  for(uint32_t i = 0; i < pdu->N_bytes; i++)
-  {
-//    cout << unsigned((pdu->msg[i])) << " ";
-    cout << setw(2) << setfill('0') << hex << (int)(pdu->msg[i]) << " ";
-  }
-  cout << endl;
+  print_packet_message(pdu);
   rrc->write_pdu(rnti, lcid, pdu);
   
 }
