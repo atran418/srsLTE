@@ -103,7 +103,7 @@ bool pdcp::is_drb_enabled(uint32_t lcid)
 
 void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
 {
-  cout << "SDU" << endl;
+  cout << "Writing SDU" << endl;
   print_packet_message(sdu);
   if(valid_lcid(lcid))
     pdcp_array[lcid].write_sdu(sdu);
@@ -138,7 +138,7 @@ void pdcp::config_security(uint32_t lcid,
 *******************************************************************************/
 void pdcp::write_pdu(uint32_t lcid, byte_buffer_t *pdu)
 {
-  cout << "PDU" << endl;
+  cout << "Writing PDU" << endl;
   print_packet_message(pdu);
   if(valid_lcid(lcid))
     pdcp_array[lcid].write_pdu(pdu);
