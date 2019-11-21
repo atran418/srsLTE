@@ -27,8 +27,12 @@
 
 #include "srslte/upper/pdcp.h"
 
+
+// MY INCLUDES
 #include <iostream>
 #include <iomanip>
+#include <sys/types.h>
+#include <unistd.h>
 
 using namespace std;
 
@@ -50,6 +54,11 @@ pdcp::pdcp()
 
 void pdcp::init(srsue::rlc_interface_pdcp *rlc_, srsue::rrc_interface_pdcp *rrc_, srsue::gw_interface_pdcp *gw_, log *pdcp_log_, uint32_t lcid_, uint8_t direction_)
 {
+  int mypid = getpid();
+  int myppid = getppid();
+  cout << "\nMy process ID: " << (int)mypid << endl;
+  cout << "Parent ID: " << (int)myppid << endl;
+  
   rlc       = rlc_;
   rrc       = rrc_;
   gw        = gw_;
@@ -103,7 +112,13 @@ bool pdcp::is_drb_enabled(uint32_t lcid)
 
 void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
 {
-  cout << "Writing SDU" << endl;
+  
+  int mypid = getpid();
+  int myppid = getppid();
+  cout << dec << "\nMy process ID: " << mypid << endl;
+  cout << dec << "Parent ID: " << myppid << endl;
+  
+  cout << "Writing SDU" << endl; 
   print_packet_message(sdu);
   if(valid_lcid(lcid))
     pdcp_array[lcid].write_sdu(sdu);
@@ -138,6 +153,12 @@ void pdcp::config_security(uint32_t lcid,
 *******************************************************************************/
 void pdcp::write_pdu(uint32_t lcid, byte_buffer_t *pdu)
 {
+  
+  int mypid = getpid();
+  int myppid = getppid();
+  cout << dec << "\nMy process ID: " << mypid << endl;
+  cout << dec << "Parent ID: " << myppid << endl;
+  
   cout << "Writing PDU" << endl;
   print_packet_message(pdu);
   if(valid_lcid(lcid))
