@@ -33,18 +33,12 @@
 #include <iomanip>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <stdio.h>
+#include <string.h>
 
 using namespace std;
-
-//void print_packet_message(srsltebyte_buffer_t *pdu)
-//{
-//  for(uint32_t i = 0; i < pdu->N_bytes; i++)
-//  {
-//    cout << setw(2) << setfill('0') << hex << (int)(pdu->msg[i]) << " ";
-//  }
-//  cout << endl;
-//  
-//}
 
 
 namespace srslte {
@@ -117,6 +111,24 @@ void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
   int myppid = getppid();
   cout << dec << "\nMy process ID: " << mypid << endl;
   cout << dec << "Parent ID: " << myppid << endl;
+  
+  //WRITE MSG TO SHARED MEMORY
+  key_t my_key = ftok("/tmp/shmfile", 65);
+  if (my_key == -1){
+    perror("Ftok error");
+  }
+  // Create shared memory segment
+  int shmid;
+  shmid = shmget(my_key, 1024, 0666 | IPC_CREAT);
+  if (shmid == -1){
+    perror("Shared memory error");
+  }
+  // Attach shared mem segment to address space
+  uint8_t *shmaddr = (uint8_t*) shmat(shmid, (void*)0, 0);
+  *shmaddr = *(sdu->msg);
+  // Detach from segment
+  shmdt(shmaddr);
+  
   
   cout << "Writing SDU" << endl; 
   print_packet_message(sdu);
