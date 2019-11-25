@@ -92,26 +92,12 @@ void print_packet_message(byte_buffer_t *pdu)
   cout << endl;
   
 }
-/*******************************************************************************
-  RRC/GW interface
-*******************************************************************************/
-bool pdcp::is_drb_enabled(uint32_t lcid)
-{
-  if(lcid >= SRSLTE_N_RADIO_BEARERS) {
-    pdcp_log->error("Radio bearer id must be in [0:%d] - %d\n", SRSLTE_N_RADIO_BEARERS, lcid);
-    return false;
-  }
-  return pdcp_array[lcid].is_active();
-}
 
-void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
+/*******************************************************************************
+ Write Message to Shared Memory Segment
+*******************************************************************************/
+void write_to_shared_memory(byte_buffer_t *sdu)
 {
-  
-  int mypid = getpid();
-  int myppid = getppid();
-  cout << dec << "\nMy process ID: " << mypid << endl;
-  cout << dec << "Parent ID: " << myppid << endl;
-  
   //WRITE MSG TO SHARED MEMORY
   key_t my_key = ftok("/tmp/shmfile", 65);
   if (my_key == -1){
@@ -133,7 +119,32 @@ void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
   }
   *shmaddr = *(sdu->msg);
   // Detach from segment
-//  shmdt(shmaddr);
+  shmdt(shmaddr);
+  
+}
+
+/*******************************************************************************
+  RRC/GW interface
+*******************************************************************************/
+bool pdcp::is_drb_enabled(uint32_t lcid)
+{
+  if(lcid >= SRSLTE_N_RADIO_BEARERS) {
+    pdcp_log->error("Radio bearer id must be in [0:%d] - %d\n", SRSLTE_N_RADIO_BEARERS, lcid);
+    return false;
+  }
+  return pdcp_array[lcid].is_active();
+}
+
+void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
+{
+  
+  int mypid = getpid();
+  int myppid = getppid();
+  cout << dec << "\nMy process ID: " << mypid << endl;
+  cout << dec << "Parent ID: " << myppid << endl;
+  
+  //WRITE MSG TO SHARED MEMORY
+  write_to_shared_memory(sdu);
   
   
   cout << "Writing SDU" << endl; 
