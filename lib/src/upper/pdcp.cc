@@ -125,9 +125,15 @@ void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
   }
   // Attach shared mem segment to address space
   uint8_t *shmaddr = (uint8_t*) shmat(shmid, (void*)0, 0);
+  
+  // Write to memory
+  for(uint32_t i = 0; i < sdu->N_bytes; i++)
+  {
+    shmaddr[i] = sdu->msg[i];
+  }
   *shmaddr = *(sdu->msg);
   // Detach from segment
-  shmdt(shmaddr);
+//  shmdt(shmaddr);
   
   
   cout << "Writing SDU" << endl; 
