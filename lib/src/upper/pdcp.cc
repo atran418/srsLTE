@@ -37,6 +37,8 @@
 #include <sys/shm.h>
 #include <stdio.h>
 #include <string.h>
+#include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -52,6 +54,11 @@ void pdcp::init(srsue::rlc_interface_pdcp *rlc_, srsue::rrc_interface_pdcp *rrc_
   int myppid = getppid();
   cout << "\nMy process ID: " << (int)mypid << endl;
   cout << "Parent ID: " << (int)myppid << endl;
+    // Get Process Name
+  ifstream comm("/proc/self/comm");
+  string process_name;
+  getline(comm, process_name);
+  cout << "Proc name: " << process_name << endl;
   
   rlc       = rlc_;
   rrc       = rrc_;
@@ -89,7 +96,7 @@ void print_packet_message(byte_buffer_t *pdu)
   {
     cout << setw(2) << setfill('0') << hex << (int)(pdu->msg[i]) << " ";
   }
-  cout << endl;
+  cout << dec << endl;
   
 }
 
@@ -122,7 +129,21 @@ void write_to_shared_memory(byte_buffer_t *sdu)
   shmdt(shmaddr);
   
 }
-
+/*******************************************************************************
+ Print Process
+*******************************************************************************/
+void print_process_info(void)
+{
+  int mypid = getpid();
+  int myppid = getppid();
+  cout  << "\nMy process ID: " << dec << mypid << endl;
+  cout  << "Parent ID: " << dec << myppid << endl;
+  // Get Process Name
+  ifstream comm("/proc/self/comm");
+  string name;
+  getline(comm, name);
+  cout << "Process name: " << name << endl;
+}
 /*******************************************************************************
   RRC/GW interface
 *******************************************************************************/
@@ -138,11 +159,7 @@ bool pdcp::is_drb_enabled(uint32_t lcid)
 void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
 {
   
-  int mypid = getpid();
-  int myppid = getppid();
-  cout << dec << "\nMy process ID: " << mypid << endl;
-  cout << dec << "Parent ID: " << myppid << endl;
-  
+  print_process_info();
   //WRITE MSG TO SHARED MEMORY
   write_to_shared_memory(sdu);
   
@@ -183,10 +200,7 @@ void pdcp::config_security(uint32_t lcid,
 void pdcp::write_pdu(uint32_t lcid, byte_buffer_t *pdu)
 {
   
-  int mypid = getpid();
-  int myppid = getppid();
-  cout << dec << "\nMy process ID: " << mypid << endl;
-  cout << dec << "Parent ID: " << myppid << endl;
+  print_process_info();
   
   cout << "Writing PDU" << endl;
   print_packet_message(pdu);
