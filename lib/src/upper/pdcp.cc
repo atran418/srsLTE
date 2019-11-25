@@ -88,6 +88,22 @@ void pdcp::reset()
   pdcp_array[0].init(rlc, rrc, gw, pdcp_log, lcid, direction);
 }
 /*******************************************************************************
+ Print Process
+*******************************************************************************/
+string print_process_info(void)
+{
+  int mypid = getpid();
+  int myppid = getppid();
+  cout  << "\nMy process ID: " << dec << mypid << endl;
+  cout  << "Parent ID: " << dec << myppid << endl;
+  // Get Process Name
+  ifstream comm("/proc/self/comm");
+  string name;
+  getline(comm, name);
+  cout << "Process name: " << name << endl;
+  return name;
+}
+/*******************************************************************************
  Print Messages
 *******************************************************************************/
 void print_packet_message(byte_buffer_t *pdu)
@@ -105,8 +121,15 @@ void print_packet_message(byte_buffer_t *pdu)
 *******************************************************************************/
 void write_to_shared_memory(byte_buffer_t *sdu)
 {
+  //Get Process name
+  ifstream comm("/proc/self/comm");
+  string process_name;
+  getline(comm, process_name);
+
   //WRITE MSG TO SHARED MEMORY
   key_t my_key = ftok("/tmp/shmfile", 65);
+  key_t enb_key = ftok("/tmp/shmenb", 65);
+  key_t ue_key = ftok("/tmp/shmue", 65);
   if (my_key == -1){
     perror("Ftok error");
   }
@@ -115,6 +138,15 @@ void write_to_shared_memory(byte_buffer_t *sdu)
   shmid = shmget(my_key, 1024, 0666 | IPC_CREAT);
   if (shmid == -1){
     perror("Shared memory error");
+  }
+  
+//  if(process_name.compare("srsue") == 0){
+//    cout << "THIS IS A UE" << endl;
+//  }
+  if(process_name == "srsue"){
+    cout << "THIS IS A UE" << endl;
+  } else if(process_name == "srsenb"){
+    cout << "THIS IS ENB" << endl;
   }
   // Attach shared mem segment to address space
   uint8_t *shmaddr = (uint8_t*) shmat(shmid, (void*)0, 0);
@@ -128,21 +160,6 @@ void write_to_shared_memory(byte_buffer_t *sdu)
   // Detach from segment
   shmdt(shmaddr);
   
-}
-/*******************************************************************************
- Print Process
-*******************************************************************************/
-void print_process_info(void)
-{
-  int mypid = getpid();
-  int myppid = getppid();
-  cout  << "\nMy process ID: " << dec << mypid << endl;
-  cout  << "Parent ID: " << dec << myppid << endl;
-  // Get Process Name
-  ifstream comm("/proc/self/comm");
-  string name;
-  getline(comm, name);
-  cout << "Process name: " << name << endl;
 }
 /*******************************************************************************
   RRC/GW interface
