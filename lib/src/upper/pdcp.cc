@@ -133,21 +133,19 @@ void write_to_shared_memory(byte_buffer_t *sdu)
   if (my_key == -1){
     perror("Ftok error");
   }
-  // Create shared memory segment
+  // Create shared memory segment based on process
   int shmid;
-  shmid = shmget(my_key, 1024, 0666 | IPC_CREAT);
+  if(process_name == "srsue"){
+    shmid = shmget(ue_key, 1024, 0666 | IPC_CREAT);
+  } else if(process_name == "srsenb"){
+    shmid = shmget(enb_key, 1024, 0666 | IPC_CREAT);
+  }else{
+    shmid = shmget(my_key, 1024, 0666 | IPC_CREAT);
+  }
   if (shmid == -1){
     perror("Shared memory error");
   }
   
-//  if(process_name.compare("srsue") == 0){
-//    cout << "THIS IS A UE" << endl;
-//  }
-  if(process_name == "srsue"){
-    cout << "THIS IS A UE" << endl;
-  } else if(process_name == "srsenb"){
-    cout << "THIS IS ENB" << endl;
-  }
   // Attach shared mem segment to address space
   uint8_t *shmaddr = (uint8_t*) shmat(shmid, (void*)0, 0);
   
