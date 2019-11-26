@@ -50,15 +50,6 @@ pdcp::pdcp()
 
 void pdcp::init(srsue::rlc_interface_pdcp *rlc_, srsue::rrc_interface_pdcp *rrc_, srsue::gw_interface_pdcp *gw_, log *pdcp_log_, uint32_t lcid_, uint8_t direction_)
 {
-  int mypid = getpid();
-  int myppid = getppid();
-  cout << "\nMy process ID: " << (int)mypid << endl;
-  cout << "Parent ID: " << (int)myppid << endl;
-    // Get Process Name
-  ifstream comm("/proc/self/comm");
-  string process_name;
-  getline(comm, process_name);
-  cout << "Proc name: " << process_name << endl;
   
   rlc       = rlc_;
   rrc       = rrc_;
