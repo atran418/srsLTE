@@ -50,6 +50,15 @@ pdcp::pdcp()
 
 void pdcp::init(srsue::rlc_interface_pdcp *rlc_, srsue::rrc_interface_pdcp *rrc_, srsue::gw_interface_pdcp *gw_, log *pdcp_log_, uint32_t lcid_, uint8_t direction_)
 {
+  cout << "Initializing PDCP layer" << endl;
+  // Created shared memory files if they do not exist
+  std::fstream fs;
+  fs.open("/tmp/shmue", std::ios::out | std::ios::app);
+  fs.close();
+  fs.open("/tmp/shmue", std::ios::in | std::ios::out | std::ios::app);
+  fs.open("/tmp/shmenb", std::ios::out | std::ios::app);
+  fs.close();
+  fs.open("/tmp/shmenb", std::ios::in | std::ios::out | std::ios::app);
   
   rlc       = rlc_;
   rrc       = rrc_;
@@ -121,8 +130,11 @@ void write_to_shared_memory(byte_buffer_t *sdu)
   key_t my_key = ftok("/tmp/shmfile", 65);
   key_t enb_key = ftok("/tmp/shmenb", 65);
   key_t ue_key = ftok("/tmp/shmue", 65);
-  if (my_key == -1){
-    perror("Ftok error");
+  if (ue_key == -1){
+    perror("Ftok shmue error");
+  }
+  if (enb_key == -1){
+    perror("Ftok shmenb error");
   }
   // Create shared memory segment based on process
   int shmid;
