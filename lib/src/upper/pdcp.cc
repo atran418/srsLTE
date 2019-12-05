@@ -42,6 +42,11 @@
 
 using namespace std;
 
+//temp packet structure
+struct temp_packet_t{
+  uint32_t    N_bytes;
+  uint8_t     msg[SRSLTE_MAX_BUFFER_SIZE_BYTES];
+} temp_packet;
 
 namespace srslte {
 
@@ -149,15 +154,22 @@ void write_to_shared_memory(byte_buffer_t *sdu)
     perror("Shared memory error");
   }
   
-  // Attach shared mem segment to address space
-  uint8_t *shmaddr = (uint8_t*) shmat(shmid, (void*)0, 0);
+//  // Attach shared mem segment to address space
+//  uint8_t *shmaddr = (uint8_t*) shmat(shmid, (void*)0, 0);
+//  
+//  // Write to memory
+//  for(uint32_t i = 0; i < sdu->N_bytes; i++)
+//  {
+//    shmaddr[i] = sdu->msg[i];
+//  }
   
-  // Write to memory
+  temp_packet_t *shmaddr = (temp_packet_t*) shmat(shmid, (void*)0, 0);
+  shmaddr->N_bytes = sdu->N_bytes;
   for(uint32_t i = 0; i < sdu->N_bytes; i++)
   {
-    shmaddr[i] = sdu->msg[i];
+    shmaddr->msg[i] = sdu->msg[i];
   }
-  *shmaddr = *(sdu->msg);
+  
   // Detach from segment
   shmdt(shmaddr);
   
@@ -178,14 +190,15 @@ void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
 {
   
   print_process_info();
+  
+  cout << "Writing SDU" << endl; 
+  print_packet_message(sdu);
   //WRITE MSG TO SHARED MEMORY
   write_to_shared_memory(sdu);
   
   
-  cout << "Writing SDU" << endl; 
-  print_packet_message(sdu);
-  if(valid_lcid(lcid))
-    pdcp_array[lcid].write_sdu(sdu);
+//  if(valid_lcid(lcid))
+//    pdcp_array[lcid].write_sdu(sdu);
 }
 
 void pdcp::add_bearer(uint32_t lcid, srslte_pdcp_config_t cfg)
