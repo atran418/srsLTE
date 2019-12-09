@@ -39,14 +39,24 @@
 #include <string.h>
 #include <fstream>
 #include <string>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+
 
 using namespace std;
 
 //temp packet structure
 struct temp_packet_t{
   uint32_t    N_bytes;
-  uint8_t     msg[SRSLTE_MAX_BUFFER_SIZE_BYTES];
+//  uint8_t     msg[SRSLTE_MAX_BUFFER_SIZE_BYTES];
+  uint8_t     msg[8000];
 } temp_packet;
+
+struct message {
+   long mtype;
+   temp_packet_t  temp;
+};
 
 namespace srslte {
 
@@ -154,15 +164,6 @@ void write_to_shared_memory(byte_buffer_t *sdu)
     perror("Shared memory error");
   }
   
-//  // Attach shared mem segment to address space
-//  uint8_t *shmaddr = (uint8_t*) shmat(shmid, (void*)0, 0);
-//  
-//  // Write to memory
-//  for(uint32_t i = 0; i < sdu->N_bytes; i++)
-//  {
-//    shmaddr[i] = sdu->msg[i];
-//  }
-  
   temp_packet_t *shmaddr = (temp_packet_t*) shmat(shmid, (void*)0, 0);
   shmaddr->N_bytes = sdu->N_bytes;
   for(uint32_t i = 0; i < sdu->N_bytes; i++)
@@ -172,6 +173,42 @@ void write_to_shared_memory(byte_buffer_t *sdu)
   
   // Detach from segment
   shmdt(shmaddr);
+  
+}
+/*******************************************************************************
+ Write Message Message Queue
+*******************************************************************************/
+void write_to_message_queue(byte_buffer_t *sdu)
+{
+  
+  struct message buf;
+
+  system("touch /tmp/msgq.txt");
+  
+  key_t key = ftok("/tmp/msgq.txt", 'B');
+  if (key == -1){
+    perror("ftok");
+    exit(-1);
+  }
+  
+  int mqid = msgget(key, 0644 | IPC_CREAT);
+  if ( mqid == -1 ){
+    perror("mssget");
+    exit(-1);
+  }
+  
+  
+  buf.mtype = 1; // We don't really care what it is right no
+  
+      // Add junk to message buf
+  for (uint32_t i =0 ; i < sdu->N_bytes; i++)
+  {
+    buf.temp.msg[i] = sdu->msg[i];
+  }
+  
+  buf.temp.N_bytes = sdu->N_bytes;
+  
+  msgsnd(mqid, &buf, sizeof(message), 0);
   
 }
 /*******************************************************************************
@@ -194,11 +231,12 @@ void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
   cout << "Writing SDU" << endl; 
   print_packet_message(sdu);
   //WRITE MSG TO SHARED MEMORY
-  write_to_shared_memory(sdu);
+//  write_to_shared_memory(sdu);
+  write_to_message_queue(sdu);
   
   
-//  if(valid_lcid(lcid))
-//    pdcp_array[lcid].write_sdu(sdu);
+  if(valid_lcid(lcid))
+    pdcp_array[lcid].write_sdu(sdu);
 }
 
 void pdcp::add_bearer(uint32_t lcid, srslte_pdcp_config_t cfg)
