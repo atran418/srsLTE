@@ -106,6 +106,8 @@ void pdcp::stop()
 *******************************************************************************/
 void * pdcp::read_ue_messageq(void*)
 {
+  srslte::byte_buffer_t pdu_structure;
+  srslte::byte_buffer_t *pdu = &pdu_structure;
   message msg;
   
   key_t key = ftok("/tmp/msgq.txt", 'B');
@@ -118,17 +120,23 @@ void * pdcp::read_ue_messageq(void*)
   cout << sizeof(message) << endl;
   cout << "Receiving messages..." << endl;
   
+  //Always be listening to message queue
   while(true){
     msgrcv(msg_id, &msg, sizeof(message), 1, 0);
     printf("N_bytes : %zu\n" , msg.temp.N_bytes);
     printf("LCID    : %zu\n" , msg.temp.lcid);
     for(uint32_t i = 0; i < msg.temp.N_bytes; i++)
     {
-//      cout << msg.temp.msg[i];
       cout << setw(2) << setfill('0') << hex << (int)(msg.temp.msg[i]) << " ";
+      pdu->msg[i] = msg.temp.msg[i];
     }
     cout << endl;
-//  msgctl(msg_id, IPC_RMID, NULL); 
+    pdu->N_bytes = msg.temp.N_bytes;
+    
+    // TODO: pass pdu messages to the next layer
+    // FIXME: cannot exit this thread
+    this->users.count(10);
+    
   }
   return NULL;
 
@@ -199,6 +207,7 @@ void pdcp::write_sdu(uint16_t rnti, uint32_t lcid, srslte::byte_buffer_t* sdu)
 {
 //  cout << "Writing SDU" << endl;
 //  print_packet_message(sdu);
+  cout << "WRITE SDU RNTI: " << rnti << endl;
   if (users.count(rnti)) {
     users[rnti].pdcp->write_sdu(lcid, sdu);
   } else {
