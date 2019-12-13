@@ -20,5 +20,6 @@
 
 file(GLOB SOURCES "*.cc")
 add_library(srsenb_upper STATIC ${SOURCES})
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -pthread")
 install(TARGETS srsenb_upper DESTINATION ${LIBRARY_DIR})
 

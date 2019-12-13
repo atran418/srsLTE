@@ -29,8 +29,31 @@
 
 #include <iostream>
 #include <iomanip>
+#include <thread>
+#include <unistd.h>
+#include <pthread.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <cstdlib>
+#include <iostream>
+#include <stdio.h>
+#include <inttypes.h>
 
 using namespace std;
+
+struct temp_packet_t{
+  uint32_t N_bytes;
+  uint32_t lcid;
+//  uint8_t msg[1000];
+  uint8_t msg[8000];
+  
+};
+
+struct message {
+   long mtype;
+//   char mtext[200];
+   temp_packet_t  temp;
+};
 
 void print_packet_message(srslte::byte_buffer_t *pdu)
 {
@@ -42,16 +65,31 @@ void print_packet_message(srslte::byte_buffer_t *pdu)
   
 }
 
+void bar(){
+  cout << "bar " << endl;
+  sleep(5);
+}
+
 namespace srsenb {
   
 void pdcp::init(rlc_interface_pdcp* rlc_, rrc_interface_pdcp* rrc_, gtpu_interface_pdcp* gtpu_, srslte::log* pdcp_log_)
 {
+  cout << "***INIT PDCP ON ENB***" << endl;
   rlc   = rlc_; 
   rrc   = rrc_; 
   gtpu  = gtpu_;
   log_h = pdcp_log_;
   
   pool = srslte::byte_buffer_pool::get_instance();
+  
+  // Starting thread
+  pthread_t msg_queue_thread;
+  pthread_create(&msg_queue_thread, NULL, this->read_ue_messageq, NULL);
+//  pthread_cancel(msg_queue_thread);
+  pthread_exit(NULL);
+  
+  
+  
 }
 
 void pdcp::stop()
@@ -60,6 +98,40 @@ void pdcp::stop()
     rem_user((uint32_t) iter->first);
   }
   users.clear();
+}
+
+
+/*******************************************************************************
+ Read from message queue
+*******************************************************************************/
+void * pdcp::read_ue_messageq(void*)
+{
+  message msg;
+  
+  key_t key = ftok("/tmp/msgq.txt", 'B');
+  if (key == -1){
+    perror("ftok");
+    exit(-1);
+  }
+  
+  int msg_id = msgget(key, 0666 | IPC_CREAT);
+  cout << sizeof(message) << endl;
+  cout << "Receiving messages..." << endl;
+  
+  while(true){
+    msgrcv(msg_id, &msg, sizeof(message), 1, 0);
+    printf("N_bytes : %zu\n" , msg.temp.N_bytes);
+    printf("LCID    : %zu\n" , msg.temp.lcid);
+    for(uint32_t i = 0; i < msg.temp.N_bytes; i++)
+    {
+//      cout << msg.temp.msg[i];
+      cout << setw(2) << setfill('0') << hex << (int)(msg.temp.msg[i]) << " ";
+    }
+    cout << endl;
+//  msgctl(msg_id, IPC_RMID, NULL); 
+  }
+  return NULL;
+
 }
 
 void pdcp::add_user(uint16_t rnti)
@@ -114,9 +186,9 @@ void pdcp::config_security(uint16_t rnti, uint32_t lcid, uint8_t* k_rrc_enc_, ui
 void pdcp::write_pdu(uint16_t rnti, uint32_t lcid, srslte::byte_buffer_t* sdu)
 {
   if (users.count(rnti)) {
-    cout << "Writing PDU (PDCP)" << endl;
-    cout << "N bytes: " << (int)(sdu -> N_bytes) << endl; 
-    print_packet_message(sdu);
+//    cout << "Writing PDU (PDCP)" << endl;
+//    cout << "N bytes: " << (int)(sdu -> N_bytes) << endl; 
+//    print_packet_message(sdu);
     users[rnti].pdcp->write_pdu(lcid, sdu);
   } else {
     pool->deallocate(sdu);
@@ -125,8 +197,8 @@ void pdcp::write_pdu(uint16_t rnti, uint32_t lcid, srslte::byte_buffer_t* sdu)
 
 void pdcp::write_sdu(uint16_t rnti, uint32_t lcid, srslte::byte_buffer_t* sdu)
 {
-  cout << "Writing SDU" << endl;
-  print_packet_message(sdu);
+//  cout << "Writing SDU" << endl;
+//  print_packet_message(sdu);
   if (users.count(rnti)) {
     users[rnti].pdcp->write_sdu(lcid, sdu);
   } else {

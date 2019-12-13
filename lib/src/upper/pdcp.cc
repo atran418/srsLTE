@@ -49,6 +49,7 @@ using namespace std;
 //temp packet structure
 struct temp_packet_t{
   uint32_t    N_bytes;
+  uint32_t    lcid;
 //  uint8_t     msg[SRSLTE_MAX_BUFFER_SIZE_BYTES];
   uint8_t     msg[8000];
 } temp_packet;
@@ -65,7 +66,7 @@ pdcp::pdcp()
 
 void pdcp::init(srsue::rlc_interface_pdcp *rlc_, srsue::rrc_interface_pdcp *rrc_, srsue::gw_interface_pdcp *gw_, log *pdcp_log_, uint32_t lcid_, uint8_t direction_)
 {
-  cout << "Initializing PDCP layer" << endl;
+  cout << "************ Initializing PDCP layer ************" << endl;
   // Created shared memory files if they do not exist
   std::fstream fs;
   fs.open("/tmp/shmue", std::ios::out | std::ios::app);
@@ -74,6 +75,7 @@ void pdcp::init(srsue::rlc_interface_pdcp *rlc_, srsue::rrc_interface_pdcp *rrc_
   fs.open("/tmp/shmenb", std::ios::out | std::ios::app);
   fs.close();
   fs.open("/tmp/shmenb", std::ios::in | std::ios::out | std::ios::app);
+
   
   rlc       = rlc_;
   rrc       = rrc_;
@@ -178,13 +180,18 @@ void write_to_shared_memory(byte_buffer_t *sdu)
 /*******************************************************************************
  Write Message Message Queue
 *******************************************************************************/
-void write_to_message_queue(byte_buffer_t *sdu)
+void write_to_message_queue(uint32_t lcid, byte_buffer_t *sdu)
 {
   
   struct message buf;
-
-  system("touch /tmp/msgq.txt");
+    // Get Process Name
+  ifstream comm("/proc/self/comm");
+  string process_name;
+  getline(comm, process_name);
   
+  if(process_name == "srsue")
+  {
+ 
   key_t key = ftok("/tmp/msgq.txt", 'B');
   if (key == -1){
     perror("ftok");
@@ -207,8 +214,12 @@ void write_to_message_queue(byte_buffer_t *sdu)
   }
   
   buf.temp.N_bytes = sdu->N_bytes;
+  buf.temp.lcid = lcid;
   
   msgsnd(mqid, &buf, sizeof(message), 0);
+  
+  
+  } // endif
   
 }
 /*******************************************************************************
@@ -232,11 +243,11 @@ void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
   print_packet_message(sdu);
   //WRITE MSG TO SHARED MEMORY
 //  write_to_shared_memory(sdu);
-  write_to_message_queue(sdu);
+  write_to_message_queue(lcid, sdu);
   
   
-  if(valid_lcid(lcid))
-    pdcp_array[lcid].write_sdu(sdu);
+//  if(valid_lcid(lcid))
+//    pdcp_array[lcid].write_sdu(sdu);
 }
 
 void pdcp::add_bearer(uint32_t lcid, srslte_pdcp_config_t cfg)

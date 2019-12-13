@@ -46,6 +46,9 @@ public:
   // pdcp_interface_rlc
   void write_pdu(uint16_t rnti, uint32_t lcid, srslte::byte_buffer_t *sdu); 
   
+  // start thread to read from message queue
+  static void *read_ue_messageq(void *);
+  
   // pdcp_interface_rrc
   void reset(uint16_t rnti);
   void add_user(uint16_t rnti);  
