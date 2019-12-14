@@ -30,7 +30,28 @@
 #include "enb.h"
 #include <iostream>
 
+// For relay
+#include <cstdlib>
+#include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <iomanip> 
+
 using namespace std;
+
+struct temp_packet_t{
+  uint32_t N_bytes;
+  uint32_t lcid;
+//  uint8_t msg[1000];
+  uint8_t msg[8000];
+  
+};
+
+struct message {
+   long mtype;
+//   char mtext[200];
+   temp_packet_t  temp;
+};
 
 namespace srsenb {
 
@@ -229,10 +250,37 @@ void enb::pregenerate_signals(bool enable)
 
 void enb::start_relay()
 {
-  while(true)
-  {
-    cout << "STARTING RELAY" << endl;
-    sleep(5);
+  srslte::byte_buffer_t pdu_structure;
+  srslte::byte_buffer_t *pdu = &pdu_structure;
+  message msg;
+  
+  uint16_t user_id = 10;
+  pdcp.add_user(user_id);
+  
+  key_t key = ftok("/tmp/msgq.txt", 'B');
+  if (key == -1){
+    perror("ftok");
+    exit(-1);
+  }
+  
+  int msg_id = msgget(key, 0666 | IPC_CREAT);
+  cout << sizeof(message) << endl;
+  cout << "Receiving messages..." << endl;
+  
+  //Always be listening to message queue
+  while(true){
+    msgrcv(msg_id, &msg, sizeof(message), 1, 0);
+    cout << "N Bytes : " << msg.temp.N_bytes << endl;
+    cout << "LCID    : " << msg.temp.lcid;
+
+    for(uint32_t i = 0; i < msg.temp.N_bytes; i++)
+    {
+      cout << setw(2) << setfill('0') << hex << (int)(msg.temp.msg[i]) << " ";
+      pdu->msg[i] = msg.temp.msg[i];
+    }
+    cout << endl;
+    pdu->N_bytes = msg.temp.N_bytes;
+    
   }
 }
 
