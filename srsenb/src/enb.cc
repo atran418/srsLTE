@@ -254,6 +254,7 @@ void enb::start_relay()
   srslte::byte_buffer_t *pdu = &pdu_structure;
   message msg;
   
+  //arbitrary RNTI for user
   uint16_t user_id = 10;
   pdcp.add_user(user_id);
   
@@ -280,6 +281,7 @@ void enb::start_relay()
     }
     cout << endl;
     pdu->N_bytes = msg.temp.N_bytes;
+    pdcp.write_pdu(user_id, msg.temp.lcid, pdu);
     
   }
 }
