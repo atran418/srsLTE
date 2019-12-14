@@ -146,6 +146,8 @@ public:
   static void cleanup(void);
 
   bool init(all_args_t *args_);
+  
+  void start_relay();
 
   void stop();
 

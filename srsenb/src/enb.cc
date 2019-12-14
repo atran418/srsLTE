@@ -28,6 +28,9 @@
 #include <boost/thread/mutex.hpp>
 #include <enb.h>
 #include "enb.h"
+#include <iostream>
+
+using namespace std;
 
 namespace srsenb {
 
@@ -222,6 +225,15 @@ bool enb::init(all_args_t *args_)
 void enb::pregenerate_signals(bool enable)
 {
   //phy.enable_pregen_signals(enable);
+}
+
+void enb::start_relay()
+{
+  while(true)
+  {
+    cout << "STARTING RELAY" << endl;
+    sleep(5);
+  }
 }
 
 void enb::stop()

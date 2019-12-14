@@ -357,6 +357,9 @@ int main(int argc, char *argv[])
     exit(1);
   }
   metrics.init(enb, args.expert.metrics_period_secs);
+  
+  enb->start_relay();
+  
 
   pthread_t input;
   pthread_create(&input, NULL, &input_loop, &metrics);

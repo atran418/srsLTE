@@ -83,12 +83,10 @@ void pdcp::init(rlc_interface_pdcp* rlc_, rrc_interface_pdcp* rrc_, gtpu_interfa
   pool = srslte::byte_buffer_pool::get_instance();
   
   // Starting thread
-  pthread_t msg_queue_thread;
-  pthread_create(&msg_queue_thread, NULL, this->read_ue_messageq, NULL);
-//  pthread_cancel(msg_queue_thread);
-  pthread_exit(NULL);
-  
-  
+//  pthread_t msg_queue_thread;
+//  pthread_create(&msg_queue_thread, NULL, this->read_ue_messageq, NULL);
+//
+//  pthread_exit(NULL);
   
 }
 
@@ -135,7 +133,8 @@ void * pdcp::read_ue_messageq(void*)
     
     // TODO: pass pdu messages to the next layer
     // FIXME: cannot exit this thread
-    this->users.count(10);
+//    this->write_pdu(0, msg.temp.lcid, pdu);
+    
     
   }
   return NULL;
