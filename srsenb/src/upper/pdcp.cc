@@ -193,11 +193,9 @@ void pdcp::config_security(uint16_t rnti, uint32_t lcid, uint8_t* k_rrc_enc_, ui
 void pdcp::write_pdu(uint16_t rnti, uint32_t lcid, srslte::byte_buffer_t* sdu)
 {
   if (users.count(rnti)) {
-//    cout << "Writing PDU (PDCP)" << endl;
-//    cout << "N bytes: " << (int)(sdu -> N_bytes) << endl; 
-//    print_packet_message(sdu);
     users[rnti].pdcp->write_pdu(lcid, sdu);
   } else {
+    cout << "Users.count() failed" << endl;
     pool->deallocate(sdu);
   }
 }
