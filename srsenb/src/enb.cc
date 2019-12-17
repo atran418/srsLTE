@@ -283,7 +283,6 @@ void enb::start_relay()
     pdu->N_bytes = msg.temp.N_bytes;
 //    pdcp.write_pdu(user_id, msg.temp.lcid, pdu);
     pdcp.write_sdu(user_id, msg.temp.lcid, pdu);
-    pool->print_all_buffers();
     
   }
 }
