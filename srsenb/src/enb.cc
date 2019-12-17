@@ -258,6 +258,7 @@ void enb::start_relay()
   uint16_t user_id = 10;
   pdcp.add_user(user_id);
   
+  
   key_t key = ftok("/tmp/msgq.txt", 'B');
   if (key == -1){
     perror("ftok");
@@ -265,14 +266,13 @@ void enb::start_relay()
   }
   
   int msg_id = msgget(key, 0666 | IPC_CREAT);
-  cout << sizeof(message) << endl;
   cout << "Receiving messages..." << endl;
   
   //Always be listening to message queue
   while(true){
     msgrcv(msg_id, &msg, sizeof(message), 1, 0);
     cout << "N Bytes : " << msg.temp.N_bytes << endl;
-    cout << "LCID    : " << msg.temp.lcid;
+    cout << "LCID    : " << msg.temp.lcid <<endl;;
 
     for(uint32_t i = 0; i < msg.temp.N_bytes; i++)
     {
@@ -281,7 +281,9 @@ void enb::start_relay()
     }
     cout << endl;
     pdu->N_bytes = msg.temp.N_bytes;
-    pdcp.write_pdu(user_id, msg.temp.lcid, pdu);
+//    pdcp.write_pdu(user_id, msg.temp.lcid, pdu);
+    pdcp.write_sdu(user_id, msg.temp.lcid, pdu);
+    pool->print_all_buffers();
     
   }
 }

@@ -309,7 +309,7 @@ void rrc::write_dl_info(uint16_t rnti, byte_buffer_t* sdu)
     dl_dcch_msg.msg.dl_info_transfer.dedicated_info.N_bytes = sdu->N_bytes;
     
     sdu->reset();
-    
+   
     users[rnti].send_dl_dcch(&dl_dcch_msg, sdu);
         
   } else {
@@ -636,7 +636,7 @@ void rrc::run_thread()
           break;
       }
     } else {
-      printf("Discarting rnti=0x%xn", p.rnti);
+      printf("Discarting rnti=0x%x\n", p.rnti);
       rrc_log->warning("Discarting PDU for removed rnti=0x%x\n", p.rnti);
     }
     pthread_mutex_unlock(&user_mutex);

@@ -237,17 +237,17 @@ bool pdcp::is_drb_enabled(uint32_t lcid)
 void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
 {
   
-  print_process_info();
+//  print_process_info();
   
   cout << "Writing SDU" << endl; 
   print_packet_message(sdu);
   //WRITE MSG TO SHARED MEMORY
 //  write_to_shared_memory(sdu);
-  write_to_message_queue(lcid, sdu);
+//  write_to_message_queue(lcid, sdu);
   
   
-//  if(valid_lcid(lcid))
-//    pdcp_array[lcid].write_sdu(sdu);
+  if(valid_lcid(lcid))
+    pdcp_array[lcid].write_sdu(sdu);
 }
 
 void pdcp::add_bearer(uint32_t lcid, srslte_pdcp_config_t cfg)
@@ -280,12 +280,15 @@ void pdcp::config_security(uint32_t lcid,
 void pdcp::write_pdu(uint32_t lcid, byte_buffer_t *pdu)
 {
   
-  print_process_info();
+//  print_process_info();
   
   cout << "Writing PDU" << endl;
   print_packet_message(pdu);
-  if(valid_lcid(lcid))
-    pdcp_array[lcid].write_pdu(pdu);
+  write_to_message_queue(lcid, pdu);
+//  if(valid_lcid(lcid))
+//  {
+//    pdcp_array[lcid].write_pdu(pdu);
+//  }
 }
 
 void pdcp::write_pdu_bcch_bch(byte_buffer_t *sdu)
