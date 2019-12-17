@@ -251,7 +251,7 @@ void enb::pregenerate_signals(bool enable)
 void enb::start_relay()
 {
   srslte::byte_buffer_t pdu_structure;
-  srslte::byte_buffer_t *pdu = &pdu_structure;
+  srslte::byte_buffer_t *pdu = pool->allocate();
   message msg;
   
   //arbitrary RNTI for user
