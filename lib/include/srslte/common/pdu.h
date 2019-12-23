@@ -37,6 +37,8 @@
 
 
 namespace srslte {  
+    
+void print_packet_message(byte_buffer_t *pdu);
   
 template<class SubH>
 class pdu

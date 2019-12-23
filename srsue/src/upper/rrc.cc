@@ -28,6 +28,7 @@
 #include <unistd.h>
 #include <sstream>
 #include "srslte/asn1/liblte_rrc.h"
+#include "srslte/common/pdu.h"
 #include "upper/rrc.h"
 #include <boost/assign.hpp>
 #include <upper/rrc.h>
@@ -43,16 +44,6 @@ using namespace srslte;
 #include <iomanip>
 
 using namespace std;
-
-void print_packet_message(srslte::byte_buffer_t *pdu)
-{
-  for(uint32_t i = 0; i < pdu->N_bytes; i++)
-  {
-    cout << setw(2) << setfill('0') << hex << (int)(pdu->msg[i]) << " ";
-  }
-  cout << endl;
-  
-}
 
 
 namespace srsue {
@@ -915,6 +906,9 @@ void rrc::rrc_connection_release() {
 *
 *
 *******************************************************************************/
+#include <iostream>
+using namespace std;
+
 void rrc::write_pdu_bcch_bch(byte_buffer_t *pdu) {
   pool->deallocate(pdu);
   if (state == RRC_STATE_PLMN_SELECTION) {
@@ -931,6 +925,7 @@ void rrc::write_pdu_bcch_dlsch(byte_buffer_t *pdu) {
   LIBLTE_RRC_BCCH_DLSCH_MSG_STRUCT dlsch_msg;
   srslte_bit_unpack_vector(pdu->msg, bit_buf.msg, pdu->N_bytes * 8);
   bit_buf.N_bits = pdu->N_bytes * 8;
+  
   pool->deallocate(pdu);
   liblte_rrc_unpack_bcch_dlsch_msg((LIBLTE_BIT_MSG_STRUCT *) &bit_buf, &dlsch_msg);
 
@@ -940,7 +935,7 @@ void rrc::write_pdu_bcch_dlsch(byte_buffer_t *pdu) {
 
       // Handle SIB1
       memcpy(&current_cell->sib1, &dlsch_msg.sibs[0].sib.sib1, sizeof(LIBLTE_RRC_SYS_INFO_BLOCK_TYPE_1_STRUCT));
-
+      
       rrc_log->info("SIB1 received, CellID=%d, si_window=%d, sib2_period=%d\n",
                     current_cell->sib1.cell_id & 0xfff,
                     liblte_rrc_si_window_length_num[current_cell->sib1.si_window_length],

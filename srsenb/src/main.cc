@@ -358,7 +358,7 @@ int main(int argc, char *argv[])
   }
   metrics.init(enb, args.expert.metrics_period_secs);
   
-  enb->start_relay();
+//  enb->start_relay();
   
 
   pthread_t input;

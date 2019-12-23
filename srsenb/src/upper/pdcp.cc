@@ -26,6 +26,7 @@
 
 #include "upper/pdcp.h"
 #include "upper/common_enb.h"
+#include "srslte/common/pdu.h"
 
 #include <iostream>
 #include <iomanip>
@@ -54,16 +55,6 @@ struct message {
 //   char mtext[200];
    temp_packet_t  temp;
 };
-
-void print_packet_message(srslte::byte_buffer_t *pdu)
-{
-  for(uint32_t i = 0; i < pdu->N_bytes; i++)
-  {
-    cout << setw(2) << setfill('0') << hex << (int)(pdu->msg[i]) << " ";
-  }
-  cout << endl;
-  
-}
 
 void bar(){
   cout << "bar " << endl;

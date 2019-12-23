@@ -26,9 +26,8 @@
 
 
 #include "srslte/upper/pdcp.h"
+#include "srslte/common/pdu.h"
 
-
-// MY INCLUDES
 #include <iostream>
 #include <iomanip>
 #include <sys/types.h>
@@ -119,18 +118,6 @@ string print_process_info(void)
   getline(comm, name);
   cout << "Process name: " << name << endl;
   return name;
-}
-/*******************************************************************************
- Print Messages
-*******************************************************************************/
-void print_packet_message(byte_buffer_t *pdu)
-{
-  for(uint32_t i = 0; i < pdu->N_bytes; i++)
-  {
-    cout << setw(2) << setfill('0') << hex << (int)(pdu->msg[i]) << " ";
-  }
-  cout << dec << endl;
-  
 }
 
 /*******************************************************************************
@@ -241,6 +228,7 @@ void pdcp::write_sdu(uint32_t lcid, byte_buffer_t *sdu)
   
   cout << "Writing SDU" << endl; 
   print_packet_message(sdu);
+
   //WRITE MSG TO SHARED MEMORY
 //  write_to_shared_memory(sdu);
 //  write_to_message_queue(lcid, sdu);
@@ -284,17 +272,22 @@ void pdcp::write_pdu(uint32_t lcid, byte_buffer_t *pdu)
   
   cout << "Writing PDU" << endl;
   print_packet_message(pdu);
-  write_to_message_queue(lcid, pdu);
-//  if(valid_lcid(lcid))
-//  {
-//    pdcp_array[lcid].write_pdu(pdu);
-//  }
+
+//  write_to_message_queue(lcid, pdu);
+  if(valid_lcid(lcid))
+  {
+    pdcp_array[lcid].write_pdu(pdu);
+  }
 }
 
 void pdcp::write_pdu_bcch_bch(byte_buffer_t *sdu)
 {
   rrc->write_pdu_bcch_bch(sdu);
 }
+
+/*******************************************************************************
+ Write PDU (LC: BCCH; TC: DLSCH
+*******************************************************************************/
 void pdcp::write_pdu_bcch_dlsch(byte_buffer_t *sdu)
 {
   rrc->write_pdu_bcch_dlsch(sdu);

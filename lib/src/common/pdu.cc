@@ -30,6 +30,10 @@
 
 #include "srslte/common/pdu.h"
 #include "srslte/srslte.h"
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
 
 // Table 6.1.3.1-1 Buffer size levels for BSR 
 static uint32_t btable[64] = {
@@ -41,7 +45,18 @@ static uint32_t btable[64] = {
 
 namespace srslte {
    
-    
+/*******************************************************************************
+ Print Messages
+*******************************************************************************/
+void print_packet_message(byte_buffer_t *pdu)
+{
+  for(uint32_t i = 0; i < pdu->N_bytes; i++)
+  {
+    cout << setw(2) << setfill('0') << hex << (int)(pdu->msg[i]) << " ";
+  }
+  cout << dec << endl;
+  
+}
 void sch_pdu::fprint(FILE* stream)
 {
   fprintf(stream, "MAC SDU for UL/DL-SCH. ");
