@@ -1068,8 +1068,8 @@ void rrc::write_pdu_pcch(byte_buffer_t *pdu) {
 *
 *******************************************************************************/
 void rrc::write_sdu(uint32_t lcid, byte_buffer_t *sdu) {
-  cout << "Writing SDU (RRC)" << endl;
-  print_packet_message(sdu);
+//  cout << "Writing SDU (RRC)" << endl;
+//  print_packet_message(sdu);
   rrc_log->info_hex(sdu->msg, sdu->N_bytes, "RX %s SDU", get_rb_name(lcid).c_str());
   switch (state) {
     case RRC_STATE_CONNECTING:
@@ -1085,8 +1085,8 @@ void rrc::write_sdu(uint32_t lcid, byte_buffer_t *sdu) {
 }
 
 void rrc::write_pdu(uint32_t lcid, byte_buffer_t *pdu) {
-  cout << "Writing PDU (RRC)" << endl;
-  print_packet_message(pdu);
+//  cout << "Writing PDU (RRC)" << endl;
+//  print_packet_message(pdu);
   rrc_log->info_hex(pdu->msg, pdu->N_bytes, "TX %s PDU", get_rb_name(lcid).c_str());
   rrc_log->info("TX PDU Stack latency: %ld us\n", pdu->get_latency_us());
 

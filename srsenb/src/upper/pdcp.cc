@@ -210,15 +210,15 @@ void pdcp::user_interface_gtpu::write_pdu(uint32_t lcid, srslte::byte_buffer_t *
 
 void pdcp::user_interface_rlc::write_sdu(uint32_t lcid, srslte::byte_buffer_t* sdu)
 {
-  cout << "Write SDU (RLC interface)" << endl;
-  print_packet_message(sdu);
+//  cout << "Write SDU (RLC interface)" << endl;
+//  print_packet_message(sdu);
   rlc->write_sdu(rnti, lcid, sdu);
 }
 
 void pdcp::user_interface_rrc::write_pdu(uint32_t lcid, srslte::byte_buffer_t* pdu)
 {
-  cout << "Write PDU on RRC interface" << endl;
-  print_packet_message(pdu);
+//  cout << "Write PDU on RRC interface" << endl;
+//  print_packet_message(pdu);
   rrc->write_pdu(rnti, lcid, pdu);
   
 }

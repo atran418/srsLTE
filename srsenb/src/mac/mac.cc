@@ -38,6 +38,10 @@
 #include "srslte/common/log.h"
 #include "mac/mac.h"
 
+
+#include <iostream>
+
+using namespace std;
 //#define WRITE_SIB_PCAP
 
 namespace srsenb {
@@ -174,8 +178,10 @@ void mac::phy_config_enabled(uint16_t rnti, bool enabled)
 // Update UE configuration 
 int mac::ue_cfg(uint16_t rnti, sched_interface::ue_cfg_t* cfg)
 {
+  
+//  cout << "Updating UE Configuration" << endl;
+//  cout << "RNTI: " << rnti << endl;
   if (ue_db.count(rnti)) {         
-    
     // Add RNTI to the PHY (pregerate signals) now instead of after PRACH
     if (!ue_db[rnti]->is_phy_added) {
       ue_db[rnti]->is_phy_added = true; 
